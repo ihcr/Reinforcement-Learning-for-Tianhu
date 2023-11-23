@@ -1,0 +1,5 @@
+rew_ang_vel_xy,rew_base_height,rew_collision,rew_delta_phi,rew_dof_acc,rew_dof_pos_limits,rew_episode_length,rew_feet_air_time,rew_feet_height,rew_lin_vel_z,rew_orientation,rew_residual_angle,rew_stand_still,rew_stumble,rew_target_smoothness,rew_torques,rew_tracking_ang_vel,rew_tracking_lin_vel,terrain_level,total_reward
+0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9,0.0
+0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9,0.0
+0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9,0.0
+-0.5437987,-0.009523486,-0.0032000002,-0.0074607655,-0.016646788,-0.06457486,0.0033115093,-0.00065016677,-0.018052444,-0.060739946,-0.10079391,-0.013851209,-0.042426895,0.0,-0.0034186007,-0.008494478,0.011062565,0.02568525,0.88895833,-21.68558629353841

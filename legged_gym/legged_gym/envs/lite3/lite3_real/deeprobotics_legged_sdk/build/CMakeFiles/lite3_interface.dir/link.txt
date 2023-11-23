@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -flto -shared  -o lite3_interface.cpython-38-x86_64-linux-gnu.so CMakeFiles/lite3_interface.dir/python_interface.cpp.o  -Wl,-rpath,/home/tianhu/HUAWEI/quadruped-robot/rl-robotics/src/legged_gym/legged_gym/envs/lite3/lite3_real/deeprobotics_legged_sdk/build libdeeprobotics_legged_sdk.so -lpthread -lm -lrt -ldl -lstdc++ 
