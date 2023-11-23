@@ -397,7 +397,8 @@ class LeggedRobot(BaseTask):
 # ------------- AMP fuction added --------------
         if self.cfg.env.reference_state_initialization:
             frames = self.amp_loader.get_full_frame_batch(len(env_ids))
-            self._reset_dofs_amp(env_ids, frames)
+            # self._reset_dofs_amp(env_ids, frames)
+            self._reset_dofs(env_ids)
             self._reset_root_states_amp(env_ids, frames)
         else:
             self._reset_dofs(env_ids)
@@ -659,7 +660,9 @@ class LeggedRobot(BaseTask):
         base_ang_vel = self.base_ang_vel
         joint_vel = self.dof_vel
         z_pos = self.root_states[:, 2:3]
-        return torch.cat((joint_pos, foot_pos, base_lin_vel, base_ang_vel, joint_vel, z_pos), dim=-1)
+        # return torch.cat((joint_pos, foot_pos, base_lin_vel, base_ang_vel, joint_vel, z_pos), dim=-1)
+        # -----------Without Joint space state------------------
+        return torch.cat((foot_pos, base_lin_vel, base_ang_vel, z_pos), dim=-1)
     
     def get_observations(self):
         if self.cfg.env.include_history_steps is not None:
