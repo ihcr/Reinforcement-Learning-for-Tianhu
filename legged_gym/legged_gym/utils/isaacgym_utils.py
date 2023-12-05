@@ -403,85 +403,85 @@ def stairs_platform_slope_terrain(terrain,
     return terrain
 
 
-if torch.cuda.is_available():
-    import string
-    import cupy as cp
+# if torch.cuda.is_available():
+#     import string
+#     import cupy as cp
 
-    def compute_meshes_normals_kernel():
-        compute_meshes_normals_kernel = cp.ElementwiseKernel(
-            in_params="raw U vertices, raw T triangles",
-            out_params="raw U output",
-            preamble=string.Template("""
-                __device__ bool cross(float p1x, float p1y, float p1z,
-                                        float p2x, float p2y, float p2z,
-                                        float& normalx,float& normaly,float& normalz)
-                {
-                    float nx = p1y*p2z - p1z*p2y;
-                    float ny = p1z*p2x - p1x*p2z;
-                    float nz = p1x*p2y - p1y*p2x;
-                    float l = sqrt(nx*nx + ny*ny + nz*nz);
-                    if (l <1e-4) {
-                        l = 1;
-                    }
-                    if (nz < 0.) {
-                        nx *=-1;
-                        ny *=-1;
-                        nz *=-1;
-                    }
-                    atomicAdd(&normalx, nx/l);
-                    atomicAdd(&normaly, ny/l);
-                    atomicAdd(&normalz, nz/l);
+#     def compute_meshes_normals_kernel():
+#         compute_meshes_normals_kernel = cp.ElementwiseKernel(
+#             in_params="raw U vertices, raw T triangles",
+#             out_params="raw U output",
+#             preamble=string.Template("""
+#                 __device__ bool cross(float p1x, float p1y, float p1z,
+#                                         float p2x, float p2y, float p2z,
+#                                         float& normalx,float& normaly,float& normalz)
+#                 {
+#                     float nx = p1y*p2z - p1z*p2y;
+#                     float ny = p1z*p2x - p1x*p2z;
+#                     float nz = p1x*p2y - p1y*p2x;
+#                     float l = sqrt(nx*nx + ny*ny + nz*nz);
+#                     if (l <1e-4) {
+#                         l = 1;
+#                     }
+#                     if (nz < 0.) {
+#                         nx *=-1;
+#                         ny *=-1;
+#                         nz *=-1;
+#                     }
+#                     atomicAdd(&normalx, nx/l);
+#                     atomicAdd(&normaly, ny/l);
+#                     atomicAdd(&normalz, nz/l);
 
-                    return true;
-                }
-                """).substitute(),
-            operation=string.Template("""
-                int idx = i*2;
+#                     return true;
+#                 }
+#                 """).substitute(),
+#             operation=string.Template("""
+#                 int idx = i*2;
                 
-                T mesh_1_0 = triangles[idx*3];
-                T mesh_1_1 = triangles[idx*3+1];
-                T mesh_1_2 = triangles[idx*3+2];
-                T mesh_2_0 = triangles[idx*3+3];
-                T mesh_2_1 = triangles[idx*3+4];
-                T mesh_2_2 = triangles[idx*3+5];
+#                 T mesh_1_0 = triangles[idx*3];
+#                 T mesh_1_1 = triangles[idx*3+1];
+#                 T mesh_1_2 = triangles[idx*3+2];
+#                 T mesh_2_0 = triangles[idx*3+3];
+#                 T mesh_2_1 = triangles[idx*3+4];
+#                 T mesh_2_2 = triangles[idx*3+5];
 
-                U p01x = vertices[mesh_1_1*3] - vertices[mesh_1_0*3];
-                U p01y = vertices[mesh_1_1*3+1] - vertices[mesh_1_0*3+1];
-                U p01z = vertices[mesh_1_1*3+2] - vertices[mesh_1_0*3+2];
-                U p02x = vertices[mesh_1_2*3] - vertices[mesh_1_0*3];
-                U p02y = vertices[mesh_1_2*3+1] - vertices[mesh_1_0*3+1];
-                U p02z = vertices[mesh_1_2*3+2] - vertices[mesh_1_0*3+2];
-                cross(p01x, p01y, p01z, p02x, p02y, p02z, output[3*i], output[3*i+1],output[3*i+2]);
+#                 U p01x = vertices[mesh_1_1*3] - vertices[mesh_1_0*3];
+#                 U p01y = vertices[mesh_1_1*3+1] - vertices[mesh_1_0*3+1];
+#                 U p01z = vertices[mesh_1_1*3+2] - vertices[mesh_1_0*3+2];
+#                 U p02x = vertices[mesh_1_2*3] - vertices[mesh_1_0*3];
+#                 U p02y = vertices[mesh_1_2*3+1] - vertices[mesh_1_0*3+1];
+#                 U p02z = vertices[mesh_1_2*3+2] - vertices[mesh_1_0*3+2];
+#                 cross(p01x, p01y, p01z, p02x, p02y, p02z, output[3*i], output[3*i+1],output[3*i+2]);
                 
-                p01x = vertices[mesh_2_1*3] - vertices[mesh_2_0*3];
-                p01y = vertices[mesh_2_1*3+1] - vertices[mesh_2_0*3+1];
-                p01z = vertices[mesh_2_1*3+2] - vertices[mesh_2_0*3+2];
-                p02x = vertices[mesh_2_2*3] - vertices[mesh_2_0*3];
-                p02y = vertices[mesh_2_2*3+1] - vertices[mesh_2_0*3+1];
-                p02z = vertices[mesh_2_2*3+2] - vertices[mesh_2_0*3+2];
-                cross(p01x, p01y, p01z, p02x, p02y, p02z, output[3*i], output[3*i+1],output[3*i+2]);
+#                 p01x = vertices[mesh_2_1*3] - vertices[mesh_2_0*3];
+#                 p01y = vertices[mesh_2_1*3+1] - vertices[mesh_2_0*3+1];
+#                 p01z = vertices[mesh_2_1*3+2] - vertices[mesh_2_0*3+2];
+#                 p02x = vertices[mesh_2_2*3] - vertices[mesh_2_0*3];
+#                 p02y = vertices[mesh_2_2*3+1] - vertices[mesh_2_0*3+1];
+#                 p02z = vertices[mesh_2_2*3+2] - vertices[mesh_2_0*3+2];
+#                 cross(p01x, p01y, p01z, p02x, p02y, p02z, output[3*i], output[3*i+1],output[3*i+2]);
                 
-                output[3*i] /= 2.0;
-                output[3*i+1] /= 2.0;
-                output[3*i+2] /= 2.0;
+#                 output[3*i] /= 2.0;
+#                 output[3*i+1] /= 2.0;
+#                 output[3*i+2] /= 2.0;
                 
-                """).substitute(),
-            name="compute_meshes_normals_kernel",
-        )
-        return compute_meshes_normals_kernel
+#                 """).substitute(),
+#             name="compute_meshes_normals_kernel",
+#         )
+#         return compute_meshes_normals_kernel
 
-    compute_meshes_normals_gpu_ = compute_meshes_normals_kernel()
+#     compute_meshes_normals_gpu_ = compute_meshes_normals_kernel()
 
-    def compute_meshes_normals_gpu(num_rows, num_cols, vertices, triangles):
-        vertices_gpu = cp.array(vertices, dtype=np.float32)
-        triangles_gpu = cp.array(triangles, dtype=np.int32)
-        output = cp.zeros((num_rows - 1, num_cols - 1, 3), dtype=np.float32)
-        compute_meshes_normals_gpu_(vertices_gpu,
-                                    triangles_gpu,
-                                    output,
-                                    size=((num_rows - 1) * (num_cols - 1)))
-        output_torch = torch.as_tensor(output)
-        return output_torch
+#     def compute_meshes_normals_gpu(num_rows, num_cols, vertices, triangles):
+#         vertices_gpu = cp.array(vertices, dtype=np.float32)
+#         triangles_gpu = cp.array(triangles, dtype=np.int32)
+#         output = cp.zeros((num_rows - 1, num_cols - 1, 3), dtype=np.float32)
+#         compute_meshes_normals_gpu_(vertices_gpu,
+#                                     triangles_gpu,
+#                                     output,
+#                                     size=((num_rows - 1) * (num_cols - 1)))
+#         output_torch = torch.as_tensor(output)
+#         return output_torch
 
 
 def compute_meshes_normals(num_rows, num_cols, vertices, triangles):

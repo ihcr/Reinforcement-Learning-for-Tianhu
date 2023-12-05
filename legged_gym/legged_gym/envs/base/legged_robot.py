@@ -1474,8 +1474,10 @@ class LeggedRobot(BaseTask):
                   ' triangeles: ', self.terrain.triangles.shape[0])
             start_time = time.time()
             if torch.cuda.is_available():
-                from legged_gym.utils.isaacgym_utils import compute_meshes_normals_gpu
-                self.mesh_normals = compute_meshes_normals_gpu(
+                # from legged_gym.utils.isaacgym_utils import compute_meshes_normals_gpu
+                # self.mesh_normals = compute_meshes_normals_gpu(
+                from legged_gym.utils.isaacgym_utils import compute_meshes_normals
+                self.mesh_normals = compute_meshes_normals(
                     self.terrain.tot_rows, self.terrain.tot_cols,
                     self.terrain.vertices, self.terrain.triangles).to(self.device)
             else:
